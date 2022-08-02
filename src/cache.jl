@@ -62,6 +62,40 @@ const specialization_counter = Ref{UInt}(0)
     return new_ci
 end
 
+const disk_cache = parse(Bool, @load_preference("disk_cache", "false"))
+const cache_key = @load_preference("cache_key", "")
+
+"""
+    enable_cache!(state=true)
+
+Activate the GPUCompiler disk cache in the current environment.
+You will need to restart your Julia environment for it to take effect.
+
+!!! warning
+    The disk cache is not automatically invalidated. It is sharded upon
+    `cache_key` (see [`set_cache_key``](@ref)), the GPUCompiler version
+    and your Julia version.
+"""
+function enable_cache!(state=true)
+    @set_preferences!("disk_cache"=>state)
+end
+
+"""
+    set_cache_key(key)
+
+If you are deploying an application it is recommended that you use your
+application name and version as a cache key. To minimize the risk of
+encountering spurios cache hits.
+"""
+function set_cache_key(key)
+    @set_preferences!("cache_key"=>key)
+end
+
+key(ver::VersionNumber) = "$(ver.major)_$(ver.minor)_$(ver.patch)"
+cache_path() = @get_scratch!(cache_key * "-kernels-" * key(VERSION) * "-" * key(pkg_version))
+clear_disk_cache!() = rm(cache_path(); recursive=true, force=true)
+
+
 const cache_lock = ReentrantLock()
 function cached_compilation(cache::AbstractDict,
                             @nospecialize(job::CompilerJob),
@@ -81,6 +115,19 @@ function cached_compilation(cache::AbstractDict,
         if obj === nothing || force_compilation
             asm = nothing
 
+            # can we load from the disk cache?
+            if disk_cache && !force_compilation
+                path = joinpath(cache_path(), "$key.jls")
+                if isfile(path)
+                    try
+                        asm = deserialize(path)
+                        @debug "Loading compiled kernel for $spec from $path"
+                    catch ex
+                        @warn "Failed to load compiled kernel at $path" exception=(ex, catch_backtrace())
+                    end
+                end
+            end
+
             # compile
             if asm === nothing
                 if compile_hook[] !== nothing
@@ -88,6 +135,10 @@ function cached_compilation(cache::AbstractDict,
                 end
 
                 asm = compiler(job)
+
+                if disk_cache && !isfile(path)
+                    serialize(path, asm)
+                end
             end
 
             # link (but not if we got here because of forced compilation)

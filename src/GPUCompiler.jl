@@ -9,6 +9,17 @@ using ExprTools: splitdef, combinedef
 
 using Libdl
 
+using Preferences
+using Scratch
+using Serialization
+
+using TOML
+# Get the current version at compile-time, that's fine it's not going to change. ;)
+function get_version()
+    return VersionNumber(TOML.parsefile(joinpath(dirname(@__DIR__), "Project.toml"))["version"])
+end
+const pkg_version = get_version()
+
 const to = TimerOutput()
 
 timings() = (TimerOutputs.print_timer(to); println())
