@@ -36,7 +36,7 @@ haskey(ENV, "CI") && GPUCompiler.timings()
         cmd = `$cmd --project=$(unsafe_string(Base.JLOptions().project))`
     end
 
-    withenv("JULIA_LOAD_PATH" => "$(get(ENV, "JULIA_LOAD_PATH", "")):$(joinpath(@__DIR__, "CacheEnv"))" do
+    withenv("JULIA_LOAD_PATH" => "$(get(ENV, "JULIA_LOAD_PATH", "")):$(joinpath(@__DIR__, "CacheEnv"))") do
         @test success(pipeline(`$cmd cache.jl true`, stderr=stderr, stdout=stdout))
         @test success(pipeline(`$cmd cache.jl false`, stderr=stderr, stdout=stdout))
     end

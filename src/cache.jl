@@ -62,7 +62,7 @@ const specialization_counter = Ref{UInt}(0)
     return new_ci
 end
 
-const disk_cache = parse(Bool, @load_preference("disk_cache", "false"))
+const disk_cache = @load_preference("disk_cache", false)
 const cache_key = @load_preference("cache_key", "")
 
 """
@@ -85,7 +85,7 @@ end
 
 If you are deploying an application it is recommended that you use your
 application name and version as a cache key. To minimize the risk of
-encountering spurios cache hits.
+encountering spurious cache hits.
 """
 function set_cache_key(key)
     @set_preferences!("cache_key"=>key)
