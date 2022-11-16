@@ -45,6 +45,7 @@ end
 
 have_fma(@nospecialize(target::AbstractCompilerTarget), T::Type) = false
 
+always_inline(@nospecialize(target::AbstractCompilerTarget)) = false
 
 ## params
 
@@ -288,6 +289,10 @@ function optimization_params(@nospecialize(job::CompilerJob))
 
     if VERSION < v"1.8.0-DEV.486"
         kwargs = (kwargs..., unoptimize_throw_blocks=false)
+    end
+
+    if always_inline(job.target)
+        kwargs = (kwargs..., inline_cost_threshold=typemax(Int))
     end
 
     return OptimizationParams(;kwargs...)

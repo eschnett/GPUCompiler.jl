@@ -7,9 +7,11 @@ export GCNCompilerTarget
 Base.@kwdef struct GCNCompilerTarget <: AbstractCompilerTarget
     dev_isa::String
     features::String=""
+    always_inline::Bool = false
 end
-GCNCompilerTarget(dev_isa; features="") = GCNCompilerTarget(dev_isa, features)
+GCNCompilerTarget(dev_isa; features="", always_inline=false) = GCNCompilerTarget(dev_isa, features, always_inline)
 
+always_inline(tgt::GCNCompilerTarget) = tgt.always_inline
 llvm_triple(::GCNCompilerTarget) = "amdgcn-amd-amdhsa"
 
 function llvm_machine(target::GCNCompilerTarget)
