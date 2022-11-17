@@ -43,7 +43,7 @@ end
 
 source_code(target::PTXCompilerTarget) = "ptx"
 
-always_inline(target::PTXCompilerTarget) = tgt.always_inline
+always_inline(target::PTXCompilerTarget) = target.always_inline
 llvm_triple(target::PTXCompilerTarget) = Int===Int64 ? "nvptx64-nvidia-cuda" : "nvptx-nvidia-cuda"
 
 function llvm_machine(target::PTXCompilerTarget)
