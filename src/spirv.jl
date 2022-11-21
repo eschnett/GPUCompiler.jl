@@ -13,6 +13,7 @@ const SPIRV_Tools_jll = LazyModule("SPIRV_Tools_jll", UUID("6ac6d60f-d740-5983-9
 export SPIRVCompilerTarget
 
 Base.@kwdef struct SPIRVCompilerTarget <: AbstractCompilerTarget
+    always_inline::Bool = false
 end
 
 llvm_triple(::SPIRVCompilerTarget) = Int===Int64 ? "spir64-unknown-unknown" : "spirv-unknown-unknown"
@@ -24,6 +25,8 @@ llvm_datalayout(::SPIRVCompilerTarget) = Int===Int64 ?
     "e-i64:64-v16:16-v24:32-v32:32-v48:64-v96:128-v192:256-v256:256-v512:512-v1024:1024" :
     "e-p:32:32-i64:64-v16:16-v24:32-v32:32-v48:64-v96:128-v192:256-v256:256-v512:512-v1024:1024"
 
+
+always_inline(tgt::SPIRVCompilerTarget) = tgt.always_inline
 
 ## job
 
