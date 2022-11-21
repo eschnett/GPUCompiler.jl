@@ -7,9 +7,10 @@ end
 
 # create a GCN-based test compiler, and generate reflection methods for it
 
-function gcn_job(@nospecialize(func), @nospecialize(types); kernel::Bool=false, kwargs...)
+function gcn_job(@nospecialize(func), @nospecialize(types); 
+                 kernel::Bool=false, always_inline=false, kwargs...)
     source = FunctionSpec(typeof(func), Base.to_tuple_type(types), kernel)
-    target = GCNCompilerTarget(dev_isa="gfx900")
+    target = GCNCompilerTarget(dev_isa="gfx900"; always_inline)
     params = TestCompilerParams()
     CompilerJob(target, source, params), kwargs
 end
