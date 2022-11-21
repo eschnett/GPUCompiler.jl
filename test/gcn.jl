@@ -111,6 +111,32 @@ end
     @test occursin(r"\.type.*julia_[[:alnum:]_.]*child_\d*,@function", asm)
 end
 
+@testset "always_inline" begin
+    @eval f_expensive(x) = $(foldl((e, _) -> :(sink($e) + sink(x)), 1:100; init=:x))
+    function g(x)
+        f_expensive(x)
+        return
+    end
+    function h(x)
+        f_expensive(x)
+        return
+    end
+
+    asm = sprint(io->gcn_code_native(io, g, Tuple{Int64}; kernel=true))
+    @test occursin(r"\.type.*julia_f_expensive\d*,@function", asm)
+
+    asm = sprint(io->gcn_code_native(io, g, Tuple{Int64};
+                                     kernel=true, always_inline=true))
+    @test !occursin(r"\.type.*julia_f_expensive\d*,@function", asm)
+
+    asm = sprint(io->gcn_code_native(io, h, Tuple{Int64};
+                                     kernel=true, always_inline=true))
+    @test !occursin(r"\.type.*julia_f_expensive\d*,@function", asm)
+
+    asm = sprint(io->gcn_code_native(io, h, Tuple{Int64}; kernel=true))
+    @test occursin(r"\.type.*julia_f_expensive\d*,@function", asm)
+end
+
 @testset "child function reuse bis" begin
     # bug: similar, but slightly different issue as above
     #      in the case of two child functions
