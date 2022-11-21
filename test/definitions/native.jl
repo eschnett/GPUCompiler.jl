@@ -18,9 +18,11 @@ end
 
 GPUCompiler.method_table(@nospecialize(job::NativeCompilerJob)) = method_table
 
-function native_job(@nospecialize(f_type), @nospecialize(types); kernel::Bool=false, entry_abi=:specfunc, kwargs...)
+function native_job(@nospecialize(f_type), @nospecialize(types);
+                    kernel::Bool=false, entry_abi=:specfunc, always_inline=false,
+                    llvm_always_inline=true, kwargs...)
     source = FunctionSpec(f_type, Base.to_tuple_type(types), kernel)
-    target = NativeCompilerTarget(llvm_always_inline=true)
+    target = NativeCompilerTarget(;llvm_always_inline, always_inline)
     params = TestCompilerParams()
     CompilerJob(target, source, params, entry_abi), kwargs
 end

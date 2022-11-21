@@ -7,9 +7,10 @@ end
 
 # create a SPIRV-based test compiler, and generate reflection methods for it
 
-function spirv_job(@nospecialize(func), @nospecialize(types); kernel::Bool=false, kwargs...)
+function spirv_job(@nospecialize(func), @nospecialize(types);
+                   kernel::Bool=false, always_inline=false, kwargs...)
     source = FunctionSpec(func, Base.to_tuple_type(types), kernel)
-    target = SPIRVCompilerTarget()
+    target = SPIRVCompilerTarget(;always_inline)
     params = TestCompilerParams()
     CompilerJob(target, source, params), kwargs
 end

@@ -7,9 +7,10 @@ end
 
 # create a Metal test compiler, and generate reflection methods for it
 
-function metal_job(@nospecialize(func), @nospecialize(types); kernel::Bool=false, kwargs...)
+function metal_job(@nospecialize(func), @nospecialize(types);
+                   kernel::Bool=false, always_inline=false, kwargs...)
     source = FunctionSpec(func, Base.to_tuple_type(types), kernel)
-    target = MetalCompilerTarget(; macos=v"12.2")
+    target = MetalCompilerTarget(; macos=v"12.2", always_inline)
     params = TestCompilerParams()
     CompilerJob(target, source, params), kwargs
 end
