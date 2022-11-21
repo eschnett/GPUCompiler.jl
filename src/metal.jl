@@ -8,10 +8,12 @@ export MetalCompilerTarget
 
 Base.@kwdef struct MetalCompilerTarget <: AbstractCompilerTarget
     macos::VersionNumber
+    always_inline::Bool = false
 end
 
 function Base.hash(target::MetalCompilerTarget, h::UInt)
-    hash(target.macos, h)
+    h = hash(target.macos, h)
+    h = hash(target.always_inline, h)
 end
 
 source_code(target::MetalCompilerTarget) = "text"
@@ -20,6 +22,8 @@ source_code(target::MetalCompilerTarget) = "text"
 llvm_machine(::MetalCompilerTarget) = nothing
 
 llvm_triple(target::MetalCompilerTarget) = "air64-apple-macosx$(target.macos)"
+
+always_inline(target::MetalCompilerTarget) = target.always_inline
 
 llvm_datalayout(target::MetalCompilerTarget) =
     "e-p:64:64:64"*
