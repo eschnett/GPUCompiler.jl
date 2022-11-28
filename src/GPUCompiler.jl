@@ -15,6 +15,12 @@ timings() = (TimerOutputs.print_timer(to); println())
 
 enable_timings() = (TimerOutputs.enable_debug_timings(GPUCompiler); return)
 
+function should_verify()
+    dbg = ccall(:jl_is_debugbuild, Cint, ()) == 1
+
+    return dbg || haskey(ENV, "CI")
+end
+
 include("utils.jl")
 
 # compiler interface and implementations

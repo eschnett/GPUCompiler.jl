@@ -6,7 +6,7 @@ steps:
       - JuliaCI/julia-coverage#v1:
           codecov: true
     command: |
-      julia -e 'using Pkg
+      julia -g2 -e 'using Pkg
 
                 println("--- :julia: Instantiating project")
                 Pkg.develop(; path=pwd())
@@ -27,7 +27,7 @@ steps:
       - JuliaCI/julia-coverage#v1:
           codecov: true
     command: |
-      julia -e 'using Pkg;
+      julia -g2 -e 'using Pkg;
 
                 println("--- :julia: Instantiating project")
                 Pkg.develop(; path=pwd())
@@ -52,7 +52,7 @@ steps:
       - JuliaCI/julia-coverage#v1:
           codecov: true
     command: |
-      julia -e 'using Pkg
+      julia -g2 -e 'using Pkg
 
                 println("--- :julia: Instantiating project")
                 Pkg.develop(; path=pwd())
@@ -101,7 +101,7 @@ steps:
       - JuliaCI/julia-coverage#v1:
           codecov: true
     command: |
-      julia -e 'using Pkg
+      julia -g2 -e 'using Pkg
 
                 println("--- :julia: Instantiating project")
                 Pkg.develop(; path=pwd())
