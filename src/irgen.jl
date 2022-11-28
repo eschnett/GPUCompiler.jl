@@ -652,6 +652,18 @@ function add_kernel_state!(mod::LLVM.Module)
                     return const_ptrtoint(workmap[target], llvmtype(val))
                 end
             end
+        elseif val isa LLVM.MetadataAsValue
+            @show val
+            @show parent(val)
+            try
+                md = Metadata(val)
+                if md isa LLVM.DILocalVariable
+                    @show LLVM.scope(md)
+                    # TODO replace scope?
+                end
+            catch err
+                @debug "Materializer encountered unkown MD" err
+            end
         end
         return val
     end
